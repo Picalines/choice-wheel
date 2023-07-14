@@ -3,7 +3,6 @@
 	import { tweened } from "svelte/motion";
 	import { scale } from "svelte/transition";
 	import rotateIconSrc from "@/assets/icons/arrow-rotate-right-solid.svg";
-	import { randomRange } from "../utils";
 
 	type T = $$Generic;
 
@@ -50,15 +49,12 @@
 		dispatch("stopped", selectedSector.value);
 	}
 
-	function onAnimationFrame() {
-		if (!spinning) return;
-
-		rotationAngle += angularVelocity;
-		rotationAngle %= TAU; // normalize angle
-	}
-
 	function updateLoop() {
-		onAnimationFrame();
+		if (spinning) {
+			rotationAngle += angularVelocity;
+			rotationAngle %= TAU; // normalize angle
+		}
+
 		requestAnimationFrame(updateLoop);
 	}
 
@@ -111,9 +107,11 @@
 					{:else}
 						<div class="sector-bg full" />
 					{/if}
-					<div class="sector-label">
-						{sector.value}
-					</div>
+					{#if sectors.length <= 15}
+						<div class="sector-label">
+							{sector.value}
+						</div>
+					{/if}
 				</div>
 			{/each}
 		</div>
@@ -202,6 +200,8 @@
 		left: 50%;
 		translate: -50% -50%;
 		max-width: 80%;
+		font-size: 1.5rem;
+		text-align: center;
 		word-break: break-word;
 	}
 
